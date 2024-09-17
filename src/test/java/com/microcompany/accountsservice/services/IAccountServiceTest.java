@@ -23,7 +23,7 @@ class IAccountServiceTest {
 
     @Test
     void create() {
-        Account newAccount = new Account(null, "Personal", LocalDate.now(), 100, new Customer(null, "Ricardo", "r@r.com"));
+        Account newAccount = new Account(null, "Personal", LocalDate.now(), 100, new Customer(null, "Ricardo", "r@r.com"),null);
         service.create(newAccount);
         assertNotNull(newAccount);
         assertTrue(newAccount.getId() > 0);
