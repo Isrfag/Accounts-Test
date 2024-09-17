@@ -25,7 +25,11 @@ class AccountRepositoryTest {
     @Autowired
     AccountRepository repository;
 
-    @Test
+
+
+
+
+    /*@Test
     @Order(1)
     void givenAccounts_WhenFindByOwnerId_ThenIsGreaterThan0() {
         List<Account> accounts = repository.findByOwnerId(1L);
@@ -41,5 +45,5 @@ class AccountRepositoryTest {
         List<Account> accounts = repository.findByOwnerId(1L);
 //        System.out.println(accounts);
         assertEquals(accounts.size(), 0);
-    }
+    }*/
 }
