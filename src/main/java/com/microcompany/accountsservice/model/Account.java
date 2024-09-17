@@ -44,11 +44,18 @@ public class Account {
     Customer owner;
 
     @Column(name="owner_id", insertable = false, updatable = false)
-    @NotNull
+    //@NotNull
     private Long ownerId;
 
+    public Account(Long id, String type, LocalDate openingDate, int balance, Long ownerId) {
+        this.id = id;
+        this.type = type;
+        this.openingDate = openingDate;
+        this.balance = balance;
+        this.ownerId = ownerId;
+    }
 
-     public void isValid() throws Exception {
+    public void isValid() throws Exception {
         if (type == null || openingDate == null)
             throw new Exception("Cuenta no válida");
     }
