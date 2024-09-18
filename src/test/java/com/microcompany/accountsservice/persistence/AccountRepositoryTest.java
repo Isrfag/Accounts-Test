@@ -89,7 +89,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void updateAccountByOwnerId_WhenAccountToUpdateDoesExist(){
+    void updateAccountByOwnerId_WhenAccountToUpdateDoesntExist(){
         assertThrows(Exception.class,() ->
            repository.findById(40L).get()
         );

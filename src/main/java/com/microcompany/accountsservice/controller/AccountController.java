@@ -37,10 +37,10 @@ public class AccountController {
                 accountService.createNewOwnerAccount(ownerId,newAccount));
     }
 
-    @RequestMapping(value = "/all/{cid}",method = RequestMethod.GET, consumes = "application/json")
+    @RequestMapping(value = "/all/{cid}",method = RequestMethod.GET)
     public ResponseEntity <List<Account>> getAccountsByCustomer(@PathVariable("cid") Long id) {
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(accountService.getAllAccountByOwnerId(id));
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.getAllAccountByOwnerId(id));
 
     }
 
@@ -67,7 +67,7 @@ public class AccountController {
         return new ResponseEntity(id,HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value="/ownerd/{cid}",method = RequestMethod.DELETE, consumes = "application/json")
+    @RequestMapping(value="/owner/{cid}",method = RequestMethod.DELETE, consumes = "application/json")
     public ResponseEntity deleteOwnerAccount(@PathVariable("cid")Long ownerId ) {
         accountService.deleteOwnerAccount(ownerId);
         return new ResponseEntity(ownerId,HttpStatus.NO_CONTENT);
