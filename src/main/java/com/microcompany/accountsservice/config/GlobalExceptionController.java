@@ -5,6 +5,7 @@ import com.microcompany.accountsservice.exception.AccountNotFoundException;
 import com.microcompany.accountsservice.exception.CustomerNotFoundException;
 import com.microcompany.accountsservice.exception.GlobalException;
 import com.microcompany.accountsservice.model.StatusMessage;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -70,4 +71,20 @@ public class GlobalExceptionController {
     StatusMessage handleConstraintViolationException(ConstraintViolationException e) {
         return new StatusMessage(HttpStatus.PRECONDITION_FAILED.value() ,"Restricción violada ");
     }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    StatusMessage handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException e) {
+        return new StatusMessage(HttpStatus.BAD_REQUEST.value(),"La id del usuario es incorrecta");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    StatusMessage handleIllegalArgumentException(IllegalArgumentException e) {
+        return new StatusMessage(HttpStatus.BAD_REQUEST.value(),"La id del usuario es incorrecta");
+    }
+
+
+
+
 }
