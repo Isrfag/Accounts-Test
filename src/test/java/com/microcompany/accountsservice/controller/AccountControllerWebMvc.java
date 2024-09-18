@@ -15,9 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import com.microcompany.accountsservice.persistence.AccountRepository;
 import com.microcompany.accountsservice.services.AccountService;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+
 import java.util.List;
 import java.time.LocalDate;
 
@@ -31,9 +35,17 @@ public class AccountControllerWebMvc {
         List<Account> accounts = List.of(new Account(null,"Company", LocalDate.now(), 100, 1L));
         Mockito.when(accountService.getAllAccountByOwnerId(1L)).thenReturn(accounts);
 
-        //Caso null
+        //Caso empty
         /*List<Account> accounts = List.of();
         Mockito.when(accountService.getAllAccountByOwnerId(1L)).thenReturn(accounts);*/
+
+        Mockito.when(accountService.createNewOwnerAccount(Mockito.anyLong(), Mockito.any(Account.class)))
+            .thenAnswer(elem -> {
+                Account ap = (Account) elem.getArguments()[1]; // El segundo argumento es el Account
+                ap.setId(1L);
+                ap.setType("Company");
+                return ap;
+        });
 
     }
 
@@ -64,6 +76,39 @@ public class AccountControllerWebMvc {
                 .andReturn();
     }
 
+    @Test
+    void givenAccount_whenValidCreateAccount_thenIsCreatedAndHaveId() throws Exception {
+        Account newProduct = new Account(null,"Company", LocalDate.now(), 100, 1L);
 
+        mockMvc.perform(post("/account/1")
+                        .content(JsonUtil.asJsonString(newProduct))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.type").exists())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.id", is(greaterThanOrEqualTo(1))));
+
+    }
+
+    @Test
+    void givenAccount_whenValidDeleteAccount_thenIsDeleted() throws Exception {
+        mockMvc.perform(delete("/account/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void givenNonExistingAccount_whenDeleteAccount_thenIsNotFound() throws Exception {
+        mockMvc.perform(delete("/account/100")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNoContent());
+    }
 
 }
