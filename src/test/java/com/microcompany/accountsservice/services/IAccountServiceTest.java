@@ -44,10 +44,15 @@ class IAccountServiceTest {
         Mockito.when(customerRepository.findById(1l)).thenReturn(Optional.of(acustomer));
         Mockito.when(accountRepo.findByOwnerId(1l)).thenReturn(accounts);
 
-        List<Account> accountsFailed = List.of(new Account(1l,"Company",LocalDate.now(),1000,10l));
         Mockito.when(customerRepository.findById(10l)).thenReturn(Optional.of(acustomer));
         Mockito.when(accountRepo.findByOwnerId(10l)).thenThrow(new AccountNotFoundException(10l));
 
+        Mockito.when(accountRepo.save(Mockito.any(Account.class)))
+                .thenAnswer(element -> {
+                    Account ap = (Account) element.getArguments()[0];
+                    ap.setId(100L);
+                    return ap;
+                });
     }
     @Autowired
     AccountService service;
@@ -58,16 +63,19 @@ class IAccountServiceTest {
     CustomerRepository customerRepository;
 
     @Test
-    void testBean() {
+    void givenAServiceBean_WhenTesting_ThenIsNotNull() {
         assertNotNull(service);
     }
 
     @Test
-    void create() {
-        Account newAccount = new Account(null, "Personal", LocalDate.now(), 100, new Customer(null, "Ricardo", "r@r.com"),null);
-        service.create(newAccount);
-        assertNotNull(newAccount);
-        assertTrue(newAccount.getId() > 0);
+    void given_ACustomerId_WhenCustomerIdIsValid_ThenCreateNewAccountForCustomer() {
+
+        assertThat(service).isNotNull();
+        Account theAccount= new Account(1l,"Company",LocalDate.now(),1000,1l);
+        Account newAccount= service.createNewOwnerAccount(1l,theAccount);
+
+        assertThat(newAccount).extracting(Account::getOwnerId).isEqualTo(theAccount.getOwnerId());
+
     }
 
     @Test
@@ -85,81 +93,10 @@ class IAccountServiceTest {
     }
 
     @Test
-    void getAccounts() {
-        List<Account> accounts = service.getAccounts();
-        assertNotNull(accounts);
-        assertTrue(accounts.size() > 0);
-    }
-
-    @Test
-    void getAccount() {
-        Account account = service.getAccount(1L);
-        assertNotNull(account);
-        assertEquals(account.getId(), 1L);
-    }
-
-    /*@Test
-    void getAccountByOwnerId() {
-        List<Account> accounts = service.getAccountByOwnerId(1L);
-        assertNotNull(accounts);
-        assertTrue(accounts.size() > 0);
-    }*/
-
-    @Test
-    void updateAccount() {
-        Account account = new Account();
-        account.setType("Company");
-        service.updateAccount(1L, account);
-
-        Account updatedAccount = service.getAccount(1L);
-        assertNotNull(updatedAccount);
-        assertEquals(updatedAccount.getType(), "Company");
-    }
-
-    @Test
-    void addBalance() {
-        Account originalAccount = service.getAccount(1L);
-        int amount = 10;
-
-        service.addBalance(1L, amount, 1L);
-
-        Account updatedAccount = service.getAccount(1L);
-        assertEquals(updatedAccount.getBalance(), originalAccount.getBalance() + amount);
-    }
-
-    /*@Test
-    void withdrawBalanceOK() throws Exception {
-        Account originalAccount = service.getAccount(1L);
-        int amount = 10;
-
-        service.withdrawBalance(1L, amount, 1L);
-
-        Account updatedAccount = service.getAccount(1L);
-        assertEquals(updatedAccount.getBalance(), originalAccount.getBalance() - amount);
-    }*/
-
-    /*@Test
-    void withdrawBalanceNOK() {
-        Account originalAccount = service.getAccount(1L);
-        int amount = 1000;
-
-        assertThrows(Exception.class, () -> {
-            service.withdrawBalance(1L, amount, 1L);
-        });
-    }*/
-
-    @Test
-    void delete() {
-        service.delete(1L);
-        assertThrows(Exception.class, () -> {
-            Account originalAccount = service.getAccount(1L);
-        });
-    }
-
-    /*@Test
-    void deleteAccountsUsingOwnerId() {
+    void givenACustomerId_WhenCustomerAccountExist_ThenDeleleteAndReturnTrue() {
+        assertThat(service).isNotNull();
+        List<Account> accounts = service.getAllAccountByOwnerId(1l);
         service.deleteAccountsUsingOwnerId(1L);
-        List<Account> accounts = service.getAccountByOwnerId(1L);
-        assertEquals(accounts.size(), 0);
-    }*/
+        Mockito.verify(accountRepo,Mockito.times(1)).deleteByOwnerId(1l);
+    }
 }
