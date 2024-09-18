@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 //@SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -39,20 +40,21 @@ class IAccountServiceTest {
     }
     @BeforeEach
     public void SetUp () {
-        Customer acustomer = new Customer(1l, "Reimon","RemonGmail.com");
-        List<Account> accounts = List.of(new Account(1l,"Company",LocalDate.now(),1000,1l));
-        Mockito.when(customerRepository.findById(1l)).thenReturn(Optional.of(acustomer));
-        Mockito.when(accountRepo.findByOwnerId(1l)).thenReturn(accounts);
+        Customer acustomer = new Customer(1l, "Reimon", "RemonGmail.com");
+        List<Account> accounts = List.of(new Account(1L, "Company", LocalDate.now(), 1000, 1l));
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(acustomer));
+        when(accountRepo.findByOwnerId(1L)).thenReturn(accounts);
 
-        Mockito.when(customerRepository.findById(10l)).thenReturn(Optional.of(acustomer));
-        Mockito.when(accountRepo.findByOwnerId(10l)).thenThrow(new AccountNotFoundException(10l));
+        when(customerRepository.findById(10L)).thenReturn(Optional.of(acustomer));
+        when(accountRepo.findByOwnerId(10L)).thenThrow(new AccountNotFoundException(10l));
 
-        Mockito.when(accountRepo.save(Mockito.any(Account.class)))
+        when(accountRepo.save(Mockito.any(Account.class)))
                 .thenAnswer(element -> {
                     Account ap = (Account) element.getArguments()[0];
                     ap.setId(100L);
                     return ap;
                 });
+
     }
     @Autowired
     AccountService service;
@@ -98,5 +100,12 @@ class IAccountServiceTest {
         List<Account> accounts = service.getAllAccountByOwnerId(1l);
         service.deleteAccountsUsingOwnerId(1L);
         Mockito.verify(accountRepo,Mockito.times(1)).deleteByOwnerId(1l);
+    }
+
+    @Test
+    void givenACustomerId_WhenCustomerAccountNotExist_ThenReturnException() {
+        assertThat(service).isNotNull();
+        when(accountRepo.existsById(10l)).thenReturn(false);
+        assertThrows(AccountNotFoundException.class, () -> service.deleteOwnerAccount(10L));
     }
 }
