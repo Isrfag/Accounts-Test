@@ -2,19 +2,41 @@ package com.microcompany.accountsservice.services;
 
 import com.microcompany.accountsservice.model.Account;
 import com.microcompany.accountsservice.model.Customer;
+import com.microcompany.accountsservice.persistence.AccountRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+//@SpringBootTest
+@ExtendWith(SpringExtension.class)
 class IAccountServiceTest {
+
+    @TestConfiguration
+    static class AccountServiceConfguration {
+        @Bean
+        public AccountService accountService () {
+            return new AccountService();
+        }
+    }
+    @BeforeEach
+    public void SetUp () {
+
+    }
     @Autowired
     AccountService service;
+    @MockBean
+    AccountRepository accountRepo;
 
     @Test
     void testBean() {
