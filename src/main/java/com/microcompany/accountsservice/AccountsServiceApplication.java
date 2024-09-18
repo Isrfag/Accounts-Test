@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 
 @SpringBootApplication
 //@ServletComponentScan
-public class AccountsServiceApplication {
+public class  AccountsServiceApplication {
     private static final Logger logger = LoggerFactory.getLogger(AccountsServiceApplication.class);
 
     public static void main(String[] args) {
