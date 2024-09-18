@@ -55,6 +55,13 @@ public class Account {
         this.ownerId = ownerId;
     }
 
+    public Account(Long id, String type, int balance, Long ownerId) {
+        this.id = id;
+        this.type = type;
+        this.balance = balance;
+        this.ownerId = ownerId;
+    }
+
     public void isValid() throws Exception {
         if (type == null || openingDate == null)
             throw new Exception("Cuenta no válida");
