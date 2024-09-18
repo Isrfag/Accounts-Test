@@ -41,7 +41,7 @@ public class AccountControllerWebMvc {
 
         Mockito.when(accountService.createNewOwnerAccount(Mockito.anyLong(), Mockito.any(Account.class)))
             .thenAnswer(elem -> {
-                Account ap = (Account) elem.getArguments()[1]; // El segundo argumento es el Account
+                Account ap = (Account) elem.getArguments()[1];
                 ap.setId(1L);
                 ap.setType("Company");
                 return ap;
